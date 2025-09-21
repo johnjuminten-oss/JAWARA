@@ -1,0 +1,134 @@
+/* Theme Configuration */
+:root {
+  /* Typography */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Line Heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  
+  /* Spacing System */
+  --spacing-px: 1px;
+  --spacing-0: 0;
+  --spacing-0-5: 0.125rem;
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  --spacing-10: 2.5rem;
+  --spacing-12: 3rem;
+  --spacing-16: 4rem;
+  --spacing-20: 5rem;
+  --spacing-24: 6rem;
+  
+  /* Colors - Neutral */
+  --neutral-50: #fafafb;
+  --neutral-100: #f3f4f6;
+  --neutral-200: #e5e7eb;
+  --neutral-300: #d1d5db;
+  --neutral-400: #9ca3af;
+  --neutral-500: #6b7280;
+  --neutral-600: #4b5563;
+  --neutral-700: #374151;
+  --neutral-800: #1f2937;
+  --neutral-900: #111827;
+  
+  /* Colors - Brand */
+  --brand-50: #eef2ff;
+  --brand-100: #e0e7ff;
+  --brand-200: #c7d2fe;
+  --brand-300: #a5b4fc;
+  --brand-400: #818cf8;
+  --brand-500: #6366f1;
+  --brand-600: #4f46e5;
+  --brand-700: #4338ca;
+  --brand-800: #3730a3;
+  --brand-900: #312e81;
+  
+  /* Colors - Success */
+  --success-50: #f0fdf4;
+  --success-500: #22c55e;
+  --success-700: #15803d;
+  
+  /* Colors - Warning */
+  --warning-50: #fffbeb;
+  --warning-500: #f59e0b;
+  --warning-700: #b45309;
+  
+  /* Colors - Error */
+  --error-50: #fef2f2;
+  --error-500: #ef4444;
+  --error-700: #b91c1c;
+  
+  /* Semantic Colors */
+  --background: var(--neutral-50);
+  --foreground: var(--neutral-900);
+  --muted: var(--neutral-100);
+  --muted-foreground: var(--neutral-500);
+  --popover: white;
+  --popover-foreground: var(--neutral-900);
+  --card: white;
+  --card-foreground: var(--neutral-900);
+  --border: var(--neutral-200);
+  --input: white;
+  --primary: var(--brand-700);
+  --primary-foreground: white;
+  --secondary: var(--neutral-100);
+  --secondary-foreground: var(--neutral-900);
+  --accent: var(--neutral-100);
+  --accent-foreground: var(--neutral-900);
+  --destructive: var(--error-500);
+  --destructive-foreground: white;
+  --ring: var(--brand-700);
+  
+  /* Border Radius */
+  --radius-sm: 0.125rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-full: 9999px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  
+  /* Animation */
+  --transition-all: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-colors: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), color 0.15s cubic-bezier(0.4, 0, 0.2, 1), fill 0.15s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-opacity: opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-shadow: box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-transform: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Z-index */
+  --z-0: 0;
+  --z-10: 10;
+  --z-20: 20;
+  --z-30: 30;
+  --z-40: 40;
+  --z-50: 50;
+  --z-auto: auto;
+}

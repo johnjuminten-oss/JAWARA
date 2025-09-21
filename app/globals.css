@@ -1,0 +1,451 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import '../styles/theme.css';
+@import '../styles/typography.css';
+@import '../styles/layout.css';
+@import '../styles/animations.css';
+
+:root {
+  /* Global: force white backgrounds and black text for all pages/components */
+  --background: #ffffff;
+  --foreground: #000000;
+  --card: #ffffff;
+  --card-foreground: #000000;
+  --popover: #ffffff;
+  --popover-foreground: #000000;
+  /* Keep primary as dark accent (black) so buttons are visible on white */
+  --primary: #000000;
+  --primary-foreground: #ffffff;
+  --secondary: #000000;
+  --secondary-foreground: #ffffff;
+  --muted: #f9fafb;
+  --muted-foreground: #ffffff;
+  --accent: #000000;
+  --accent-foreground: #ffffff;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e5e7eb; /* light gray border */
+  --input: #ffffff;
+  --ring: #000000;
+  --chart-1: #2563eb;
+  --chart-2: #0ea5a4;
+  --chart-3: #f59e0b;
+  --chart-4: #10b981;
+  --chart-5: #ef4444;
+  --radius: 0.625rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #000000;
+  --sidebar-primary: #000000;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #000000;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #e5e7eb;
+  --sidebar-ring: #000000;
+}
+
+/* Login page gradient variables (customizable) */
+:root {
+  /* Default gradient (fallback) */
+  --login-from: #1d4ed8; /* blue-700 */
+  --login-via: #7c3aed;  /* purple-600 */
+  --login-to: #6d28d9;   /* purple-700 */
+
+  /* Student gradient - Blue theme */
+  --login-student-from: #1e40af; /* blue-800 */
+  --login-student-via: #3b82f6;  /* blue-500 */
+  --login-student-to: #60a5fa;   /* blue-400 */
+
+  /* Teacher gradient - Red theme */
+  --login-teacher-from: #dc2626; /* red-600 */
+  --login-teacher-via: #ef4444;  /* red-500 */
+  --login-teacher-to: #f87171;   /* red-400 */
+
+  /* Admin gradient - Orange theme */
+  --login-admin-from: #ea580c;   /* orange-600 */
+  --login-admin-via: #f97316;    /* orange-500 */
+  --login-admin-to: #fb923c;     /* orange-400 */
+}
+
+:root {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+/* Base styles */
+* {
+  border-color: var(--border);
+  outline-color: var(--ring);
+}
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* --- Form controls & buttons: white inputs, minimalist border, black text, colored buttons --- */
+:root {
+  --input-bg: #ffffff;
+  --input-border: #e5e7eb;      /* gray-200 */
+  --input-text: #000000;
+  --input-placeholder: #ffffff; /* gray-500 */
+
+  --btn-primary-bg: #1d4ed8;    /* blue-700 */
+  --btn-primary-hover: #1e40af; /* blue-800 */
+  --btn-primary-text: #ffffff;
+
+  --btn-secondary-bg: #ffffff;
+  --btn-secondary-border: #000000;
+  --btn-secondary-text: #000000;
+}
+
+/* Inputs and form controls */
+input, textarea, select, .input, .form-control {
+  background: var(--input-bg) !important;
+  color: var(--input-text) !important;
+  border: 1px solid var(--input-border) !important;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  box-shadow: none !important;
+  outline: none;
+}
+
+/* Input specific styles */
+input {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+/* Input text selection */
+input::selection {
+  background-color: rgb(255, 255, 255) !important;
+  color: #000000 !important;
+}
+
+/* Placeholder styling for all inputs (cross-browser) */
+input::placeholder {
+  color: #ffffff !important;
+  background-color: #ffffff !important;
+  opacity: 1 !important;
+}
+input::-webkit-input-placeholder {
+  color: #ffffff !important;
+  background-color: #ffffff !important;
+  opacity: 1 !important;
+}
+input::-moz-placeholder {
+  color: #ffffff !important;
+  background-color: #ffffff !important;
+  opacity: 1 !important;
+}
+input:-ms-input-placeholder {
+  color: #ffffff !important;
+  background-color: #ffffff !important;
+  opacity: 1 !important;
+}
+input::-ms-input-placeholder {
+  color: #ffffff !important;
+  background-color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* Password input base styles */
+input[type="password"] {
+  background: #ffffff !important;
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+/* Focus ring */
+input:focus, textarea:focus, select:focus {
+  border-color: var(--btn-primary-bg);
+  box-shadow: 0 0 0 4px rgba(29,78,216,0.12);
+}
+
+/* Buttons */
+button, .btn {
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+/* Primary button (use .btn-primary) */
+button.btn-primary, .btn-primary {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border-color: transparent;
+}
+button.btn-primary:hover, .btn-primary:hover {
+  background: var(--btn-primary-hover);
+}
+
+/* Secondary / neutral button (use .btn-secondary) */
+button.btn-secondary, .btn-secondary {
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  border: 1px solid var(--btn-secondary-border);
+}
+
+/* Disabled state */
+button:disabled, .btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Ensure card-like components remain white with subtle border */
+.card, .panel, .popover, .modal, .panel-card {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid var(--input-border) !important;
+}
+
+/* Override any utility classes that might affect input styling */
+input[class*="bg-"],
+input[class*="text-"],
+input[class*="placeholder:"],
+input[class*="border-"] {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid var(--input-border) !important;
+}
+
+/* Core input styles */
+input, textarea, select, .input, .form-control {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid var(--input-border) !important;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+}
+
+/* Core surface styles */
+.card, .panel, .popover, .modal, .panel-card,
+header, nav, footer, .sidebar, .main-content {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border-color: var(--input-border) !important;
+}
+
+/* Custom calendar picker button styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background-color: var(--btn-primary-bg) !important;
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 4px;
+  filter: invert(1); /* Makes the icon white */
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  background-color: var(--btn-primary-hover) !important;
+}
+
+/* For Firefox */
+input[type="date"] {
+  color-scheme: light; /* Or dark if you want dark mode calendar */
+}
+
+/* Buttons */
+button, .btn, .btn-primary, .btn-secondary {
+  color: #000000 !important;
+}
+
+/* Login page gradient using variables so colors are configurable */
+.login-gradient {
+  background-image: linear-gradient(135deg, var(--login-from), var(--login-via), var(--login-to));
+}
+
+/* Role-specific gradient classes */
+.login-gradient-student {
+  background-image: linear-gradient(135deg, var(--login-student-from), var(--login-student-via), var(--login-student-to));
+}
+
+.login-gradient-teacher {
+  background-image: linear-gradient(135deg, var(--login-teacher-from), var(--login-teacher-via), var(--login-teacher-to));
+}
+
+.login-gradient-admin {
+  background-image: linear-gradient(135deg, var(--login-admin-from), var(--login-admin-via), var(--login-admin-to));
+}
+
+/* Removed the global forcing of bg-* and text-* utilities so Tailwind utility
+  classes can work as intended. We keep a few targeted defaults above and
+  component-level styles (inputs, cards) to ensure white backgrounds where
+  necessary. */
+
+/* Common component selectors (cards, popovers, dialogs, modals) */
+.card, .popover, .modal, .dialog, .toast, .sheet, .dropdown-menu, .menu,
+[data-slot="card"], [data-slot="card-header"], [data-slot="card-content"] {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border-color: #e6e9ee !important;
+}
+
+/* Ensure all Card components have solid white backgrounds */
+.Card, .card, [data-slot="card"] {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* Ensure inputs and buttons have neutral white background and black text */
+input, textarea, select, button:not([data-slot="switch"]) {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border-color: #e6e9ee !important;
+}
+
+/* Images/avatars keep natural colors but ensure surrounding container matches */
+.avatar, .profile-picture {
+  background-color: transparent !important;
+}
+
+
+
+/* Minimalist monotone palette: use neutral grays app-wide, keep vivid colors only for labeled categories/types */
+:root {
+  /* Neutral greys (monotone theme) */
+  --mono-50:  #fafafb;
+  --mono-100: #f3f4f6;
+  --mono-200: #e5e7eb;
+  --mono-300: #d1d5db;
+  --mono-400: #9ca3af;
+  --mono-500: #6b7280;
+  --mono-600: #4b5563;
+  --mono-700: #374151;
+  --mono-800: #1f2937;
+  --mono-900: #111827;
+
+  /* Use a softer primary (dark gray) instead of pure black for less contrast fatigue */
+  --primary: var(--mono-900);
+  --primary-foreground: #ffffff;
+  --foreground: var(--mono-800);
+  --background: var(--mono-50);
+  --card: #ffffff;
+  --border: var(--mono-200);
+  --muted: var(--mono-100);
+  --muted-foreground: var(--mono-500);
+
+  /* Category colors (kept saturated and used only when an element is labeled) */
+  --cat-blue:   #2563eb;
+  --cat-green:  #10b981;
+  --cat-yellow: #f59e0b;
+  --cat-red:    #ef4444;
+  --cat-purple: #7c3aed;
+}
+
+/* Helper utilities for category/type coloring. Use class or data-attribute on elements. */
+.category {
+  --cat-hex: var(--cat-blue);
+}
+
+/* Lightweight pill-style label */
+.category-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  background-color: var(--cat-hex) !important;
+  color: white !important;
+  border: 1px solid var(--cat-hex) !important;
+}
+
+  /* Card accent for labeled items: subtle left accent + muted bg */
+  .category-accent {
+    background-color: color-mix(in srgb, var(--cat-hex) 5%, white 95%);
+    border-left: 4px solid var(--cat-hex);
+  }
+
+  /* Calendar legend color boxes below calendar filter */
+  .calendar-legend-box {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 0.25rem;
+    display: inline-block;
+    margin-right: 0.5rem;
+  }
+
+  .calendar-legend-class {
+    background-color: var(--cat-green) !important;
+  }
+
+  .calendar-legend-personal {
+    background-color: var(--cat-purple) !important;
+  }
+
+  .calendar-legend-broadcast {
+    background-color: var(--cat-yellow) !important;
+  }
+
+  .calendar-legend-system {
+    background-color: var(--cat-red) !important;
+  }
+
+  .calendar-legend-alerts {
+    background-color: var(--cat-orange) !important;
+  }
+
+/* Map convenient classes to specific category colors */
+.category-blue { --cat-hex: var(--cat-blue); }
+.category-green { --cat-hex: var(--cat-green); }
+.category-yellow { --cat-hex: var(--cat-yellow); }
+.category-red { --cat-hex: var(--cat-red); }
+.category-purple { --cat-hex: var(--cat-purple); }
+
+/* Support data attributes, e.g. <div data-category="green"> */
+[data-category="blue"]   { --cat-hex: var(--cat-blue); }
+[data-category="green"]  { --cat-hex: var(--cat-green); }
+[data-category="yellow"] { --cat-hex: var(--cat-yellow); }
+[data-category="red"]    { --cat-hex: var(--cat-red); }
+[data-category="purple"] { --cat-hex: var(--cat-purple); }
+
+/* Also allow mapping by type (example selectors for common app types) */
+[data-type="assignment"], .type-assignment { --cat-hex: var(--cat-yellow); }
+[data-type="announcement"], .type-announcement { --cat-hex: var(--cat-blue); }
+[data-type="alert"], .type-alert { --cat-hex: var(--cat-red); }
+[data-type="event"], .type-event { --cat-hex: var(--cat-purple); }
+[data-type="lesson"], .type-lesson { --cat-hex: #10b981; } /* emerald to match calendar lesson */
+[data-type="exam"], .type-exam { --cat-hex: var(--cat-red); }
+[data-type="personal"], .type-personal { --cat-hex: #6366f1; } /* indigo for personal */
+[data-type="broadcast"], .type-broadcast { --cat-hex: #f59e0b; } /* amber for broadcast */
+
+/* Category-specific styles handled by their own classes above */

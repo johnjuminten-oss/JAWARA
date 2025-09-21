@@ -1,0 +1,115 @@
+/* Typography Styles */
+
+/* Headings */
+.h1 {
+  font-size: var(--font-size-4xl);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.025em;
+}
+
+.h2 {
+  font-size: var(--font-size-3xl);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.025em;
+}
+
+.h3 {
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-semibold);
+}
+
+.h4 {
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Body Text */
+.text-xs {
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
+}
+
+.text-sm {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
+.text-base {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+}
+
+.text-lg {
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-normal);
+}
+
+/* Font Weights */
+.font-normal {
+  font-weight: var(--font-weight-normal);
+}
+
+.font-medium {
+  font-weight: var(--font-weight-medium);
+}
+
+.font-semibold {
+  font-weight: var(--font-weight-semibold);
+}
+
+.font-bold {
+  font-weight: var(--font-weight-bold);
+}
+
+/* Special Text Styles */
+.text-lead {
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-relaxed);
+  color: var(--muted-foreground);
+}
+
+.text-small {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  color: var(--muted-foreground);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+/* Links */
+.link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* Lists */
+.list-disc {
+  list-style-type: disc;
+  padding-left: var(--spacing-6);
+}
+
+.list-decimal {
+  list-style-type: decimal;
+  padding-left: var(--spacing-6);
+}
+
+/* Code */
+.code {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-0-5) var(--spacing-1);
+  border-radius: var(--radius-sm);
+  background: var(--muted);
+  color: var(--foreground);
+}

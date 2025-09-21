@@ -1,0 +1,112 @@
+export const dynamic = 'force-dynamic'
+
+import { redirect } from "next/navigation"
+import { requireRole } from "@/lib/auth"
+import { createClient } from "@/lib/supabase/server"
+import { StudentDashboardContent } from "@/components/student/dashboard-content"
+
+interface Event {
+  id: string
+  title: string
+  start_at: string
+  created_by: string
+  target_class?: string
+}
+
+interface Profile {
+  id: string
+  role: string
+  class_id?: string
+}
+
+async function fetchDashboardData(profile: Profile) {
+  const supabase = await createClient()
+
+  try {
+    const [notificationsResult, eventsResult] = await Promise.all([
+      supabase
+        .from("notifications")
+        .select("*")
+        .eq("user_id", profile.id)
+        .order("created_at", { ascending: false }),
+      
+      supabase
+        .from("events")
+        .select("*")
+        .or(`created_by.eq.${profile.id}${profile.class_id ? `,target_class.eq.${profile.class_id}` : ''}`)
+        .gte("start_at", new Date().toISOString())
+        .order("start_at")
+        .limit(6)
+    ])
+
+    return {
+      notifications: notificationsResult?.data || [],
+      events: eventsResult?.data || [],
+      error: notificationsResult?.error || eventsResult?.error
+    }
+  } catch (error) {
+    console.error("Query execution error:", error)
+    return {
+      notifications: [],
+      events: [],
+      error
+    }
+  }
+}
+
+export default async function StudentDashboard() {
+  let profile: Profile | null = null
+
+  try {
+    profile = await requireRole(["student"])
+    if (!profile) {
+      redirect('/auth/login')
+    }
+
+    const { notifications, events: rawEvents, error } = await fetchDashboardData(profile)
+
+    if (error) {
+      console.error("Dashboard data fetch error:", error)
+    }
+
+    // Process events with proper typing
+    const events = (rawEvents as Event[]) || []
+    
+    // Sort events by start time
+    const allEvents = events.sort((a: Event, b: Event) => 
+      new Date(a.start_at).getTime() - new Date(b.start_at).getTime()
+    )
+
+    const stats = {
+      activeSchedules: allEvents.length,
+      todayDate: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      hasClass: Boolean(profile.class_id)
+    }
+
+    return (
+      <StudentDashboardContent
+        profile={profile}
+        notifications={notifications}
+        events={allEvents}
+        stats={stats}
+      />
+    )
+  } catch (error) {
+    console.error("StudentDashboard Error:", error)
+    if (error instanceof Error && error.message !== 'redirect') {
+      return (
+        <StudentDashboardContent
+          profile={{ id: '', role: 'student' }}
+          notifications={[]}
+          events={[]}
+          stats={{
+            activeSchedules: 0,
+            todayDate: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+            hasClass: false
+          }}
+        />
+      )
+    }
+    redirect('/auth/login')
+  }
+}
