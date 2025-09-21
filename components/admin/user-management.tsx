@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { ProfileForm } from "@/components/profile/profile-form"
 import { createClient } from "@/lib/supabase/client"
 import { Edit, Plus, Search, Trash2 } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 
 interface User {
   id: string
@@ -40,7 +40,7 @@ export function UserManagement() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const supabase = createClient()
       const [{ data: usersData }, { data: batchesData }, { data: classesData }] = await Promise.all([
@@ -57,11 +57,11 @@ export function UserManagement() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [fetchData])
 
   const filteredUsers = users.filter(
     (user) =>

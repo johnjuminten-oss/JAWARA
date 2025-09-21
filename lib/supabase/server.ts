@@ -1,13 +1,10 @@
-import { createServerClient } from "@supabase/ssr"
+import { createServerClient, type CookieOptions } from "@supabase/ssr"
+import { type SupabaseClient } from "@supabase/supabase-js"
 import { createClient as createAnonClient } from '@supabase/supabase-js'
-import { CookieOptions } from "@supabase/ssr"
 import { cookies } from "next/headers"
 
-interface Cookie {
-  name: string
-  value: string
-  options?: CookieOptions
-}
+// Force Node.js runtime to avoid Edge Runtime issues
+export const runtime = 'nodejs'
 
 export async function createClient() {
   try {
@@ -22,43 +19,11 @@ export async function createClient() {
 
     return createServerClient(supabaseUrl, supabaseAnonKey, ({
       cookies: {
-        get(name: any) {
+        get(name: string): string | undefined {
           return cookieStore.get(name)?.value
-        },
-        getAll(): any {
-          try {
-            return cookieStore.getAll()
-          } catch (error) {
-            console.error('Error getting cookies:', error)
-            return []
-          }
-        },
-        set(name: any, value: any, options: any) {
-          try {
-            cookieStore.set(name, value, options)
-          } catch (error) {
-            console.error('Error setting cookie:', error)
-          }
-        },
-        remove(name: any, options: any) {
-          try {
-            cookieStore.set(name, '', { ...options, maxAge: 0 })
-          } catch (error) {
-            console.error('Error removing cookie:', error)
-          }
-        },
-        setAll(cookiesToSet: any) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }: any) => {
-              cookieStore.set(name, value, options)
-            })
-          } catch (error) {
-            console.error('Error setting cookies:', error)
-            // Continue even if we can't set cookies in server component
-          }
-        },
+        }
       },
-    }) as any)
+    }))
   } catch (error) {
     console.error('Error creating Supabase client:', error)
     throw error

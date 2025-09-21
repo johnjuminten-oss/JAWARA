@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { type NextRequest, NextResponse } from "next/server"
+import { type BroadcastRequestBody, type BroadcastResponse, type BroadcastErrorResponse, type NotificationInsert, type AlertInsert, type BroadcastEvent, type NotificationBase } from "@/types/broadcast"
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,7 +20,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Insufficient permissions" }, { status: 403 })
     }
 
-    const body = await request.json()
+    const body = await request.json() as BroadcastRequestBody
     const {
       message,
       title,
@@ -78,7 +79,7 @@ export async function POST(request: NextRequest) {
     // Create notifications/alerts for all target users
     const table = notification_type === "alert" ? "alerts" : "notifications"
     const insertData = targetUsers.map((userId) => {
-      const base: any = {
+      const base: NotificationBase = {
         user_id: userId,
         message: `${title}\n\n${message}`,
         status: "unread",
@@ -97,14 +98,14 @@ export async function POST(request: NextRequest) {
           ...base,
           alert_type: "announcement",
           delivery: "in_app"
-        }
+        } as AlertInsert
       }
 
       // notifications table expects `type` column
       return {
         ...base,
         type: "broadcast"
-      }
+      } as NotificationInsert
     })
 
     // Create notifications and broadcast event. Use a service client for inserts
@@ -122,9 +123,9 @@ export async function POST(request: NextRequest) {
         start_at: new Date().toISOString(),
         end_at: new Date().toISOString(),
         created_by: user.id,
-        // use resolved values from resolver
-        target_class: target_class_final ?? null,
-        target_user: target_user_final ?? null,
+        target_class: target_class_final,
+        target_user: target_user_final,
+        visibility_scope: visibility_scope_final,
         metadata: {
           notification_type,
           isUrgent,
@@ -132,7 +133,7 @@ export async function POST(request: NextRequest) {
           sender_role: profile.role,
           full_message: `${title}\n\n${message}`
         }
-      }).select()
+      } as unknown as BroadcastEvent).select()
     ])
 
     if (notificationResult.error) {
@@ -145,12 +146,31 @@ export async function POST(request: NextRequest) {
       throw new Error(`Failed to create broadcast event: ${eventResult.error.message}`)
     }
 
-    return NextResponse.json({
+    const response: BroadcastResponse = {
       success: true,
       sent_count: targetUsers.length,
-      notifications: notificationResult.data,
-      broadcast: eventResult.data
-    })
+      notifications: notificationResult.data ?? [],
+      broadcast: eventResult.data?.[0] ?? {
+        title,
+        description: message,
+        event_type: event_type,
+        start_at: new Date().toISOString(),
+        end_at: new Date().toISOString(),
+        created_by: user.id,
+        target_class: target_class_final,
+        target_user: target_user_final,
+        visibility_scope: visibility_scope_final,
+        metadata: {
+          notification_type,
+          isUrgent,
+          sent_to: targetUsers.length,
+          sender_role: profile.role,
+          full_message: `${title}\n\n${message}`
+        }
+      } as BroadcastEvent
+    }
+
+    return NextResponse.json(response)
   } catch (error) {
     console.error("Error broadcasting:", JSON.stringify(error, null, 2))
     return NextResponse.json({ 

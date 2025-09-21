@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -29,9 +29,9 @@ export function BatchManagement() {
 
   useEffect(() => {
     fetchBatches()
-  }, [])
+  }, [fetchBatches])
 
-  const fetchBatches = async () => {
+  const fetchBatches = useCallback(async () => {
     try {
       const supabase = createClient()
       const { data, error } = await supabase
@@ -46,7 +46,7 @@ export function BatchManagement() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

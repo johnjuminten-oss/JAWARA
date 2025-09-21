@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -26,13 +26,7 @@ export function ClassCapacityModal({
   const [capacity, setCapacity] = useState<number>(0)
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    if (open && classId) {
-      fetchCurrentCapacity()
-    }
-  }, [open, classId])
-
-  const fetchCurrentCapacity = async () => {
+  const fetchCurrentCapacity = useCallback(async () => {
     try {
       const response = await fetch(`/api/classes/capacity?classId=${classId}`)
       if (!response.ok) throw new Error('Failed to fetch capacity')
@@ -45,7 +39,13 @@ export function ClassCapacityModal({
         variant: "destructive",
       })
     }
-  }
+  }, [classId])
+
+  useEffect(() => {
+    if (open && classId) {
+      fetchCurrentCapacity()
+    }
+  }, [open, classId, fetchCurrentCapacity])
 
   const handleCapacityUpdate = async () => {
     setLoading(true)

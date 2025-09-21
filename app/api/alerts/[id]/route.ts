@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server"
 import { type NextRequest, NextResponse } from "next/server"
+import { RouteContext } from "@/types/api"
 
-export async function PATCH(request: NextRequest, ctx: any) {
+export async function PATCH(request: NextRequest, ctx: RouteContext) {
   try {
     const supabase = await createClient()
     const {
@@ -33,7 +34,7 @@ export async function PATCH(request: NextRequest, ctx: any) {
   }
 }
 
-export async function DELETE(request: NextRequest, ctx: any) {
+export async function DELETE(request: NextRequest, ctx: RouteContext) {
   try {
     const supabase = await createClient()
     const {

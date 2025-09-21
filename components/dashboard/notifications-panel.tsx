@@ -34,7 +34,7 @@ export function NotificationsPanel({ notifications, userId }: NotificationsPanel
           <div className="text-center py-6">
             <Bell className="w-10 h-10 text-gray-300 mx-auto mb-2" aria-hidden="true" />
             <p className="text-sm text-gray-500 font-medium">No notifications</p>
-            <p className="text-xs text-gray-400 mt-1">You're all caught up!</p>
+            <p className="text-xs text-gray-400 mt-1">              You&apos;re all caught up!</p>
           </div>
         ) : (
           <div className="space-y-3" role="list" aria-label="Notifications list">

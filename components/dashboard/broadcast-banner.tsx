@@ -26,10 +26,10 @@ interface Broadcast {
     notification_type: string
     isUrgent: boolean
     sent_to: number
-  sender_role?: string
-  // optional fields used for role/batch targeting stored in metadata
-  target_role?: string | null
-  target_batch?: string | null
+    sender_role?: string
+    // optional fields used for role/batch targeting stored in metadata
+    target_role?: string | null
+    target_batch?: string | null
   }
   sender?: {
     full_name: string
@@ -146,3 +146,53 @@ export function BroadcastBanner({ userId }: BroadcastBannerProps) {
   const formattedTime = new Date(currentBroadcast.created_at).toLocaleTimeString()
   const senderName = currentBroadcast.sender?.full_name || "Unknown"
   const senderRole = currentBroadcast.sender?.role || "user"
+
+  return (
+    <Card className="relative p-4 border-yellow-500/50 bg-yellow-500/10">
+      <div className="flex items-start space-x-4">
+        <Megaphone className="h-5 w-5 text-yellow-500 mt-0.5" />
+        <div className="flex-1">
+          <div className="font-medium text-yellow-500">
+            {currentBroadcast.title || "Broadcast Message"}
+          </div>
+          <div className="text-sm mt-1">
+            {currentBroadcast.message}
+          </div>
+          <div className="text-xs text-muted-foreground mt-2">
+            From {senderName} ({senderRole}) at {formattedTime}
+          </div>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleDismiss}
+            className="h-8 w-8"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+      {broadcasts.length > 1 && (
+        <div className="flex justify-end mt-2 space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handlePrevious}
+            disabled={currentIndex === 0}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleNext}
+            disabled={currentIndex === broadcasts.length - 1}
+          >
+            Next
+          </Button>
+        </div>
+      )}
+    </Card>
+  )
+}

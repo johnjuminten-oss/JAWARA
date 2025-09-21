@@ -1,8 +1,7 @@
 "use client"
 
+import { useState, useEffect, useCallback } from "react"
 import type React from "react"
-
-import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -36,23 +35,23 @@ export function BroadcastForm({ userRole, userId }: BroadcastFormProps) {
   const supabase = createBrowserClient()
 
   // Load classes and batches on component mount
-  useEffect(() => {
-    let isMounted = true
-    const loadData = async () => {
+  const loadData = useCallback(async () => {
+    try {
       const [classesRes, batchesRes] = await Promise.all([
         supabase.from("classes").select("*"),
         supabase.from("batches").select("*"),
       ])
 
-      if (!isMounted) return
       if (classesRes.data) setClasses(classesRes.data)
       if (batchesRes.data) setBatches(batchesRes.data)
-    }
-    loadData()
-    return () => {
-      isMounted = false
+    } catch (error) {
+      console.error("Error loading data:", error)
     }
   }, [supabase])
+
+  useEffect(() => {
+    loadData()
+  }, [loadData])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

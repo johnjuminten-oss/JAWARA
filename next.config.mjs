@@ -15,6 +15,10 @@ const nextConfig = {
   },
   // Enable strict mode for better error catching
   reactStrictMode: true,
+  // Enable Node.js runtime for middleware
+  experimental: {
+    nodeMiddleware: true
+  },
   webpack: (config) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,

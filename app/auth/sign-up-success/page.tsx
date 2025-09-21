@@ -19,7 +19,7 @@ export default function SignUpSuccessPage() {
           <p className="text-sm text-gray-600">
             Please check your email and click the confirmation link to activate your EduSchedule account.
           </p>
-          <p className="text-xs text-gray-500">Don't see the email? Check your spam folder or contact support.</p>
+          <p className="text-xs text-gray-500">Don&apos;t see the email? Check your spam folder or contact support.</p>
           <div className="mt-6">
             <Link href="/" className="text-blue-600 hover:text-blue-700 font-medium text-sm">
               ← Back to home

@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { createClient } from "@/lib/supabase/client"
 import { Plus, Trash2, Users } from "lucide-react"
 import { ClassCapacityModal } from "./class-capacity-modal"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 
 interface Batch {
   id: string
@@ -38,7 +38,7 @@ export function BatchClassManagement() {
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null)
   const [showCapacityModal, setShowCapacityModal] = useState(false)
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const supabase = createClient()
       const [{ data: batchesData }, { data: classesData }] = await Promise.all([
@@ -53,11 +53,11 @@ export function BatchClassManagement() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [fetchData])
 
   const handleAddBatch = async (e: React.FormEvent) => {
     e.preventDefault()

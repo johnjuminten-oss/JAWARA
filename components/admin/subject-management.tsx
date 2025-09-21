@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -34,7 +34,7 @@ export function SubjectManagement() {
 
   const supabase = createClient()
 
-  const loadSubjects = async () => {
+  const loadSubjects = useCallback(async () => {
     setIsLoading(true)
     try {
       const { data, error } = await supabase
@@ -50,19 +50,21 @@ export function SubjectManagement() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [supabase])
+
+  const loadTeachersAndClasses = useCallback(async () => {
+    try {
+      const { data: cls } = await supabase.from("classes").select("id,name").order("name")
+      setClasses(cls || [])
+      const { data: tchs } = await supabase.from("profiles").select("id,full_name").eq("role", "teacher").order("full_name")
+      setTeachers(tchs || [])
+    } catch {}
+  }, [supabase])
 
   useEffect(() => {
     loadSubjects()
-    ;(async () => {
-      try {
-        const { data: cls } = await supabase.from("classes").select("id,name").order("name")
-        setClasses(cls || [])
-        const { data: tchs } = await supabase.from("profiles").select("id,full_name").eq("role", "teacher").order("full_name")
-        setTeachers(tchs || [])
-      } catch {}
-    })()
-  }, [])
+    loadTeachersAndClasses()
+  }, [loadSubjects, loadTeachersAndClasses])
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()

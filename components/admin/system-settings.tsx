@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -40,9 +40,9 @@ export function SystemSettings() {
 
   useEffect(() => {
     loadSettings()
-  }, [])
+  }, [loadSettings])
 
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     setIsLoading(true)
     try {
       // In a real app, you'd load these from a settings table
@@ -58,7 +58,7 @@ export function SystemSettings() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [supabase])
 
   const handleSave = async () => {
     setIsSaving(true)
