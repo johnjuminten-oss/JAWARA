@@ -38,10 +38,6 @@ export function SystemSettings() {
 
   const supabase = createBrowserClient()
 
-  useEffect(() => {
-    loadSettings()
-  }, [loadSettings])
-
   const loadSettings = useCallback(async () => {
     setIsLoading(true)
     try {
@@ -59,6 +55,10 @@ export function SystemSettings() {
       setIsLoading(false)
     }
   }, [supabase])
+
+  useEffect(() => {
+    loadSettings()
+  }, [loadSettings])
 
   const handleSave = async () => {
     setIsSaving(true)

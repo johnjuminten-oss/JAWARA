@@ -37,10 +37,6 @@ export function ClassManagement() {
     grade_level: 10
   })
 
-  useEffect(() => {
-    fetchData()
-  }, [fetchData])
-
   const fetchData = useCallback(async () => {
     try {
       const supabase = createClient()
@@ -66,6 +62,10 @@ export function ClassManagement() {
       setIsLoading(false)
     }
   }, [])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

@@ -103,4 +103,4 @@ export async function middleware(request: NextRequest) {
   }
 }
 
-export { config, runtime } from './middleware.config'
+// Remove this line or create './middleware.config' if needed

@@ -27,10 +27,6 @@ export function BatchManagement() {
     year: new Date().getFullYear()
   })
 
-  useEffect(() => {
-    fetchBatches()
-  }, [fetchBatches])
-
   const fetchBatches = useCallback(async () => {
     try {
       const supabase = createClient()
@@ -47,6 +43,10 @@ export function BatchManagement() {
       setIsLoading(false)
     }
   }, [])
+
+  useEffect(() => {
+    fetchBatches()
+  }, [fetchBatches])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
