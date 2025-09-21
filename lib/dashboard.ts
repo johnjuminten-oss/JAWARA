@@ -2,18 +2,59 @@
 import { createClient } from '@/lib/supabase/server'
 import { Event, Profile, Assignment, Notification, Subject } from '@/types'
 
+// Type definitions
+type DatabaseError = {
+  message: string
+  details?: string | null
+  code?: string | null
+} | null
+
+interface StudentWeekResponse {
+  data: Event[] | null
+  error: DatabaseError
+}
+
+interface Submission {
+  id: string
+  assignment_id: string
+  submitted_at: string
+  points_earned?: number
+  student_id: string
+}
+
+interface ClassSubject {
+  id: string
+  class_id: string
+  subject_id: string
+  teacher_id: string
+  class?: {
+    id: string
+    name: string
+    [key: string]: any
+  }
+  subject?: {
+    id: string
+    name: string
+    [key: string]: any
+  }
+  [key: string]: any
+}
+
 // Normalize various error shapes into a plain, serializable object so logging
 // and downstream consumers don't receive opaque `{}` values.
-function normalizeError(err: any) {
+function normalizeError(err: unknown) {
   if (!err) return null
   if (typeof err === 'string') return { message: err }
   if (err instanceof Error) return { message: err.message, stack: err.stack }
-  // Supabase error objects often contain message, details, code.
+
+  // For unknown objects, try to extract common error properties safely
+  const errorObj = err as Record<string, unknown>
   try {
     return {
-      message: err.message ?? (err.error || JSON.stringify(err)),
-      details: err.details ?? null,
-      code: err.code ?? null
+      message: typeof errorObj.message === 'string' ? errorObj.message :
+               (typeof errorObj.error === 'string' ? errorObj.error : JSON.stringify(err)),
+      details: typeof errorObj.details === 'string' ? errorObj.details : null,
+      code: typeof errorObj.code === 'string' ? errorObj.code : null
     }
   } catch (e) {
     return { message: String(err) }
@@ -32,7 +73,7 @@ export async function fetchDashboardData(profile: Profile) {
         .eq("user_id", profile.id)
         .eq("status", "unread")
         .order("created_at", { ascending: false }),
-      
+
       // Fetch events (do NOT rely on PostgREST implicit FK expansion for subjects)
       supabase
         .from("events")
@@ -40,7 +81,7 @@ export async function fetchDashboardData(profile: Profile) {
         .gte("start_at", new Date().toISOString())
         .order("start_at")
         .limit(10),
-      
+
       // Fetch assignments if student and we have a class_id (avoid implicit FK expansion)
       profile.role === 'student' && profile.class_id
         ? supabase
@@ -59,19 +100,19 @@ export async function fetchDashboardData(profile: Profile) {
         : null
     ])
 
-  // Merge subject name into events where possible (avoid DB relationship expansion)
-  const eventsData = eventsResult?.data || []
-  const subjectsData = subjectsResult?.data || []
+    // Merge subject name into events where possible (avoid DB relationship expansion)
+    const eventsData = eventsResult?.data || []
+    const subjectsData = subjectsResult?.data || []
 
-  // Aggregate any errors from the parallel queries into a structured, serializable object
-  const errors: Record<string, any> = {}
-  if (notificationsResult?.error) errors.notifications = normalizeError(notificationsResult.error)
-  if (eventsResult?.error) errors.events = normalizeError(eventsResult.error)
-  if (assignmentsResult?.error) errors.assignments = normalizeError(assignmentsResult.error)
-  if (subjectsResult?.error) errors.subjects = normalizeError(subjectsResult.error)
+    // Aggregate any errors from the parallel queries into a structured, serializable object
+    const errors: Record<string, DatabaseError> = {}
+    if (notificationsResult?.error) errors.notifications = normalizeError(notificationsResult.error)
+    if (eventsResult?.error) errors.events = normalizeError(eventsResult.error)
+    if (assignmentsResult?.error) errors.assignments = normalizeError(assignmentsResult.error)
+    if (subjectsResult?.error) errors.subjects = normalizeError(subjectsResult.error)
 
-  const eventsWithSubject = eventsData.map((e: any) => {
-      const subj = subjectsData.find((s: any) => s.id === e.subject_id)
+    const eventsWithSubject = eventsData.map((e: Event) => {
+      const subj = subjectsData.find((s: Subject) => s.id === e.subject)
       return {
         ...e,
         subject: subj ? { name: subj.name } : null,
@@ -79,7 +120,7 @@ export async function fetchDashboardData(profile: Profile) {
     })
 
     // Also fetch events for the current week so the dashboard can show "this week" stats
-    let weekEventsData: any[] = []
+    let weekEventsData: Event[] = []
     try {
       const startOfWeek = new Date()
       startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay())
@@ -100,7 +141,7 @@ export async function fetchDashboardData(profile: Profile) {
             .lt('start_at', endOfWeek.toISOString())
         }
 
-        let studentWeekResp: any = null
+        let studentWeekResp: StudentWeekResponse = { data: null, error: null }
         try {
           studentWeekResp = await tryQuery('student_id')
           if (studentWeekResp.error && studentWeekResp.error.code === '42703') {
@@ -108,7 +149,7 @@ export async function fetchDashboardData(profile: Profile) {
             studentWeekResp = await tryQuery('subject_id')
           }
         } catch (e) {
-          studentWeekResp = { data: null, error: e }
+          studentWeekResp = { data: null, error: normalizeError(e) }
         }
 
         if (studentWeekResp?.error) {
@@ -136,11 +177,11 @@ export async function fetchDashboardData(profile: Profile) {
     }
 
     // If assignments were fetched, fetch related submissions separately and merge
-    let assignmentsData: any[] = []
+    let assignmentsData: Assignment[] = []
     if (assignmentsResult && assignmentsResult.data) {
       assignmentsData = assignmentsResult.data
       try {
-        const assignmentIds = assignmentsData.map((a: any) => a.id).filter(Boolean)
+        const assignmentIds = assignmentsData.map((a: Assignment) => a.id).filter(Boolean)
         if (assignmentIds.length > 0) {
           const { data: submissionsForAssignments, error: subsErr } = await supabase
             .from('submissions')
@@ -152,14 +193,14 @@ export async function fetchDashboardData(profile: Profile) {
             errors.assignments = normalizeError(subsErr)
           } else {
             // group submissions by assignment_id
-            const byAssignment: Record<string, any[]> = {}
-            ;(submissionsForAssignments || []).forEach((s: any) => {
+            const byAssignment: Record<string, Submission[]> = {}
+            ;(submissionsForAssignments || []).forEach((s: Submission) => {
               byAssignment[s.assignment_id] = byAssignment[s.assignment_id] || []
               byAssignment[s.assignment_id].push(s)
             })
 
             // merge into assignments
-            assignmentsData = assignmentsData.map((a: any) => ({
+            assignmentsData = assignmentsData.map((a: Assignment) => ({
               ...a,
               submissions: byAssignment[a.id] || []
             }))
@@ -171,13 +212,13 @@ export async function fetchDashboardData(profile: Profile) {
       }
     }
 
-  const aggregatedError = Object.keys(errors).length ? errors : null
-  if (aggregatedError) console.error("Dashboard query errors:", JSON.stringify(aggregatedError, null, 2))
+    const aggregatedError = Object.keys(errors).length ? errors : null
+    if (aggregatedError) console.error("Dashboard query errors:", JSON.stringify(aggregatedError, null, 2))
 
     return {
       notifications: notificationsResult?.data || [],
       events: eventsWithSubject,
-  weekEvents: weekEventsData,
+      weekEvents: weekEventsData,
       assignments: assignmentsData,
       subjects: subjectsData,
       error: aggregatedError,
@@ -213,7 +254,7 @@ export async function fetchTeacherDashboardData(profile: Profile) {
         .eq("user_id", profile.id)
         .eq("status", "unread")
         .order("created_at", { ascending: false }),
-      
+
       // Fetch events (avoid implicit subject expansion)
       supabase
         .from("events")
@@ -221,7 +262,7 @@ export async function fetchTeacherDashboardData(profile: Profile) {
         .or(`created_by.eq.${profile.id},and(target_user.eq.${profile.id},event_type.eq.personal)`)
         .gte("start_at", new Date().toISOString())
         .order("start_at"),
-      
+
       // Fetch assigned classes
       supabase
         .from("class_subjects")
@@ -233,14 +274,14 @@ export async function fetchTeacherDashboardData(profile: Profile) {
         .eq("teacher_id", profile.id)
     ])
 
-  // Aggregate errors for teacher dashboard as well (normalize to plain objects)
-  const tErrors: Record<string, any> = {}
-  if (notificationsResult?.error) tErrors.notifications = normalizeError(notificationsResult.error)
-  if (eventsResult?.error) tErrors.events = normalizeError(eventsResult.error)
-  if (classesResult?.error) tErrors.classes = normalizeError(classesResult.error)
+    // Aggregate errors for teacher dashboard as well (normalize to plain objects)
+    const tErrors: Record<string, DatabaseError> = {}
+    if (notificationsResult?.error) tErrors.notifications = normalizeError(notificationsResult.error)
+    if (eventsResult?.error) tErrors.events = normalizeError(eventsResult.error)
+    if (classesResult?.error) tErrors.classes = normalizeError(classesResult.error)
 
-  const teacherAggregatedError = Object.keys(tErrors).length ? tErrors : null
-  if (teacherAggregatedError) console.error("Teacher dashboard query errors:", JSON.stringify(teacherAggregatedError, null, 2))
+    const teacherAggregatedError = Object.keys(tErrors).length ? tErrors : null
+    if (teacherAggregatedError) console.error("Teacher dashboard query errors:", JSON.stringify(teacherAggregatedError, null, 2))
 
     return {
       notifications: notificationsResult?.data || [],

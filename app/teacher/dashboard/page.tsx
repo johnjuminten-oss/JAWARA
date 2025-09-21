@@ -5,6 +5,54 @@ import { requireRole } from "@/lib/auth"
 import { createClient } from "@/lib/supabase/server"
 import { TeacherDashboardContent } from "@/components/teacher/dashboard-content"
 
+// Type definitions
+interface DatabaseResponse<T> {
+  data: T[] | null
+  error: any
+}
+
+interface ClassTeacher {
+  class_id: string
+}
+
+interface TeacherAssignment {
+  class_id: string
+}
+
+interface Class {
+  id: string
+  name: string
+  [key: string]: any
+}
+
+interface Event {
+  id: string
+  event_type: string
+  teacher_id: string | null
+  target_class: string | null
+  target_user: string | null
+  created_by: string
+  created_by_role: string
+  start_at: string
+  is_deleted: boolean
+  visibility_scope: string
+  [key: string]: any
+}
+
+interface Notification {
+  id: string
+  user_id: string
+  created_at: string
+  [key: string]: any
+}
+
+interface Profile {
+  id: string
+  role: string
+  class_id: string | null
+  [key: string]: any
+}
+
 export default async function TeacherDashboard() {
   try {
     const profile = await requireRole(["teacher"])
@@ -45,15 +93,15 @@ export default async function TeacherDashboard() {
     ])
 
     const derivedClassIds = [
-      ...((classTeachersRes as any)?.data || []).map((r: any) => r.class_id),
-      ...((teacherAssignmentsRes as any)?.data || []).map((r: any) => r.class_id),
+      ...(classTeachersRes.data || []).map((r: ClassTeacher) => r.class_id),
+      ...(teacherAssignmentsRes.data || []).map((r: TeacherAssignment) => r.class_id),
     ].filter(Boolean)
 
-    const classIdSet = new Set<string>(derivedClassIds.map((v: any) => String(v)))
+    const classIdSet = new Set<string>(derivedClassIds.map((v: string) => String(v)))
     const classIds = Array.from(classIdSet)
 
     // Step 3: fetch assigned class rows for display
-    let assignedClasses: any[] = []
+    let assignedClasses: Class[] = []
     if (classIds.length > 0) {
       const { data: cls } = await supabase
         .from('classes')
@@ -83,7 +131,7 @@ export default async function TeacherDashboard() {
           .in('target_class', classIds)
           .gte('start_at', nowIso)
           .eq('is_deleted', false)
-      : Promise.resolve({ data: [] } as any)
+      : Promise.resolve({ data: [] })
 
     // Query C: broadcast/schoolwide events
     const queryCTask = supabase
@@ -104,18 +152,18 @@ export default async function TeacherDashboard() {
     const [byTeacherIdRes, adminByClassRes, broadcastRes, personalRes] = await Promise.all([queryATask, queryBTask, queryCTask, queryDTask])
 
     const mergeArr = [
-      (byTeacherIdRes as any)?.data || [],
-      (adminByClassRes as any)?.data || [],
-      (broadcastRes as any)?.data || [],
-      (personalRes as any)?.data || [],
+      byTeacherIdRes.data || [],
+      adminByClassRes.data || [],
+      broadcastRes.data || [],
+      personalRes.data || [],
     ].flat()
 
-    const uniqueById = new Map<string, any>()
+    const uniqueById = new Map<string, Event>()
     for (const ev of mergeArr) {
       if (!ev) continue
       uniqueById.set(String(ev.id), ev)
     }
-    const events = Array.from(uniqueById.values()).sort((a: any, b: any) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime())
+    const events = Array.from(uniqueById.values()).sort((a: Event, b: Event) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime())
     // Compute weekly events for the greeting (today -> end of week)
     // Primary source: teacher_calendar_events view (fast). Fallback: count events by class assignments and direct targets.
   let weekEventsCount = 0
@@ -176,7 +224,7 @@ export default async function TeacherDashboard() {
               .select('class_id')
               .eq('teacher_id', profile.id)
 
-            const classIds = (classRows || []).map((r: any) => r.class_id).filter(Boolean)
+            const classIds = (classRows || []).map((r: ClassTeacher) => r.class_id).filter(Boolean)
 
             // Collect IDs from multiple queries then deduplicate
             const idSet = new Set<string>()
@@ -190,7 +238,7 @@ export default async function TeacherDashboard() {
                 .lte('start_at', endOfWeek.toISOString())
                 .eq('is_deleted', false)
 
-              const arr = (eventsByClass || []).map((r: any) => String(r.id))
+              const arr = (eventsByClass || []).map((r: { id: string }) => String(r.id))
               arr.forEach((id) => idSet.add(id))
               eventsByClassCount = arr.length
             }
@@ -204,7 +252,7 @@ export default async function TeacherDashboard() {
               .lte('start_at', endOfWeek.toISOString())
               .eq('is_deleted', false)
 
-            const arrUser = (eventsByUser || []).map((r: any) => String(r.id))
+            const arrUser = (eventsByUser || []).map((r: { id: string }) => String(r.id))
             arrUser.forEach((id) => idSet.add(id))
             eventsByUserCount = arrUser.length
 
@@ -217,7 +265,7 @@ export default async function TeacherDashboard() {
               .lte('start_at', endOfWeek.toISOString())
               .eq('is_deleted', false)
 
-            const arrCreator = (eventsByCreator || []).map((r: any) => String(r.id))
+            const arrCreator = (eventsByCreator || []).map((r: { id: string }) => String(r.id))
             arrCreator.forEach((id) => idSet.add(id))
 
             // Schoolwide events
@@ -229,7 +277,7 @@ export default async function TeacherDashboard() {
               .lte('start_at', endOfWeek.toISOString())
               .eq('is_deleted', false)
 
-            const arrSchool = (eventsSchool || []).map((r: any) => String(r.id))
+            const arrSchool = (eventsSchool || []).map((r: { id: string }) => String(r.id))
             arrSchool.forEach((id) => idSet.add(id))
 
             // Assign counts
@@ -255,9 +303,9 @@ export default async function TeacherDashboard() {
         const endOfWeek = new Date()
         endOfWeek.setDate(startOfWeek.getDate() + (6 - startOfWeek.getDay()))
 
-        const classIds = (assignedClasses || []).map((c: any) => c.id).filter(Boolean)
+        const classIds = (assignedClasses || []).map((c: Class) => c.id).filter(Boolean)
 
-        const countFromEvents = (events || []).filter((e: any) => {
+        const countFromEvents = (events || []).filter((e: Event) => {
           try {
             if (e.is_deleted) return false
             const s = new Date(e.start_at)
@@ -299,6 +347,7 @@ export default async function TeacherDashboard() {
     const stats = {
       activeSchedules: weekEventsCount,
       todayDate: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      hasClass: assignedClasses?.length > 0,
       totalStudents,
       totalClasses: assignedClasses?.length || 0
     }
