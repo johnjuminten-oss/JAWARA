@@ -1,8 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { type NextRequest, NextResponse } from "next/server"
-import { RouteContext } from "@/types/api"
 
-export async function PATCH(request: NextRequest, ctx: RouteContext) {
+export async function PATCH(request: NextRequest, context: { params: { id: string } }) {
   try {
     const supabase = await createClient()
     const {
@@ -16,7 +15,7 @@ export async function PATCH(request: NextRequest, ctx: RouteContext) {
     const body = await request.json()
     const { status } = body
 
-    const alertId = ctx?.params?.id
+    const alertId = context.params.id
     const { data: alert, error } = await supabase
       .from("alerts")
       .update({ status })
@@ -34,7 +33,7 @@ export async function PATCH(request: NextRequest, ctx: RouteContext) {
   }
 }
 
-export async function DELETE(request: NextRequest, ctx: RouteContext) {
+export async function DELETE(request: NextRequest, context: { params: { id: string } }) {
   try {
     const supabase = await createClient()
     const {
@@ -45,8 +44,8 @@ export async function DELETE(request: NextRequest, ctx: RouteContext) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-  const alertId = ctx?.params?.id
-  const { error } = await supabase.from("alerts").delete().eq("id", alertId).eq("user_id", user.id)
+    const alertId = context.params.id
+    const { error } = await supabase.from("alerts").delete().eq("id", alertId).eq("user_id", user.id)
 
     if (error) throw error
 
@@ -56,3 +55,6 @@ export async function DELETE(request: NextRequest, ctx: RouteContext) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
+
+// Force Node.js runtime for Supabase compatibility
+export const runtime = 'nodejs'

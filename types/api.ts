@@ -1,9 +1,10 @@
 import { NextRequest } from "next/server"
 
+// Updated for Next.js 15 compatibility
 export interface RouteContext {
   params: {
     id?: string
-    [key: string]: string | undefined
+    [key: string]: string | string[] | undefined
   }
 }
 
