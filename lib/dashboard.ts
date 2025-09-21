@@ -27,17 +27,9 @@ interface ClassSubject {
   class_id: string
   subject_id: string
   teacher_id: string
-  class?: {
-    id: string
-    name: string
-    [key: string]: any
-  }
-  subject?: {
-    id: string
-    name: string
-    [key: string]: any
-  }
-  [key: string]: any
+  class?: Record<string, unknown>
+  subject?: Record<string, unknown>
+  [key: string]: unknown
 }
 
 // Normalize various error shapes into a plain, serializable object so logging

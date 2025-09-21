@@ -14,13 +14,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Users, BellRing, Calendar, UserCircle, Clock, Megaphone } from "lucide-react"
 import { PersonalEventsView } from "@/components/teacher/personal-events-view"
 import { useState } from "react"
-import { DashboardStats } from "@/types"
+import type { DashboardStats, NotificationType, Profile, Notification, Event } from "@/types"
+
+interface Class {
+  id: string
+  name: string
+  description?: string
+  batch_id?: string
+  teacher_id?: string
+  subject_id?: string
+  schedule?: Record<string, unknown>
+  metadata?: Record<string, unknown>
+  created_at: string
+  updated_at: string
+}
 
 interface DashboardContentProps {
-  profile: any
-  notifications: any[]
-  events: any[]
-  classes: any[]
+  profile: Profile
+  notifications: Notification[]
+  events: Event[]
+  classes: Class[]
   stats: DashboardStats
 }
 
@@ -75,7 +88,7 @@ export function TeacherDashboardContent({ profile, notifications, events, classe
                   Class Calendar
                 </CardTitle>
                 <div className="flex gap-2">
-                  <Select value={calendarViewMode} onValueChange={(value: any) => setCalendarViewMode(value)}>
+                  <Select value={calendarViewMode} onValueChange={(value: string) => setCalendarViewMode(value as 'my_lessons' | 'full_class' | 'personal_schedule' | 'all_schedule')}>
                     <SelectTrigger className="w-48">
                       <SelectValue placeholder="Select view mode" />
                     </SelectTrigger>
@@ -109,7 +122,7 @@ export function TeacherDashboardContent({ profile, notifications, events, classe
               </CardHeader>
               <CardContent>
                 <PersonalEventsView
-                  events={events.filter(e => e.event_type === 'personal')}
+                  events={events.filter(e => e.event_type === 'personal') as any}
                   onAddEvent={() => {
                     // The event form modal is handled by TeacherCalendarView
                     // This will use the same form with event_type set to 'personal'
@@ -130,7 +143,7 @@ export function TeacherDashboardContent({ profile, notifications, events, classe
                 <NotificationsPanel
                   userId={profile.id}
                   notifications={notifications.filter(n =>
-                    n.type === 'class_alert' || n.type === 'system_update' || n.type === 'broadcast_feedback'
+                    n.notification_type === 'event' || n.notification_type === 'system' || n.notification_type === 'broadcast'
                   )}
                 />
               </CardContent>

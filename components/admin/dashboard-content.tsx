@@ -17,10 +17,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from "react"
 import { createClient } from "@/lib/supabase/client"
+import type { NotificationType, Profile, Notification, Event } from "@/types"
 
 interface DashboardContentProps {
-  profile: any
-  notifications: any[]
+  profile: Profile
+  notifications: Notification[]
   stats: {
     totalBatches: number
     totalClasses: number
@@ -28,7 +29,7 @@ interface DashboardContentProps {
     totalActiveUsers: number
     systemHealth: 'good' | 'warning' | 'error'
   }
-  events: any[]
+  events: Event[]
 }
 
 export function AdminDashboardContent({ profile, notifications, stats, events }: DashboardContentProps) {
@@ -265,7 +266,7 @@ export function AdminDashboardContent({ profile, notifications, stats, events }:
             <CardContent className="p-0">
               <NotificationsPanel
                 notifications={notifications.filter(n =>
-                  n.type === 'system_health' || n.type === 'new_user' || n.type === 'error'
+                  n.notification_type === 'system' || n.notification_type === 'event' || n.notification_type === 'broadcast'
                 )}
                 userId={profile.id}
               />

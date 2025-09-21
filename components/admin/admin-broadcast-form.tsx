@@ -103,7 +103,7 @@ export function AdminBroadcastForm({ classes, batches }: AdminBroadcastFormProps
           {/* Target Selection */}
           <div className="space-y-2">
             <Label>Target Audience</Label>
-            <Select value={targetType} onValueChange={(value: any) => setTargetType(value)}>
+            <Select value={targetType} onValueChange={(value: string) => setTargetType(value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select target audience" />
               </SelectTrigger>
@@ -179,7 +179,7 @@ export function AdminBroadcastForm({ classes, batches }: AdminBroadcastFormProps
           {/* Notification Type */}
           <div className="space-y-2">
             <Label>Notification Type</Label>
-            <Select value={notificationType} onValueChange={(value: any) => setNotificationType(value)}>
+            <Select value={notificationType} onValueChange={(value: string) => setNotificationType(value)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>

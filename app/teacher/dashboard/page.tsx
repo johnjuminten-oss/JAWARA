@@ -6,9 +6,16 @@ import { createClient } from "@/lib/supabase/server"
 import { TeacherDashboardContent } from "@/components/teacher/dashboard-content"
 
 // Type definitions
+interface DatabaseError {
+  message: string
+  details?: string
+  hint?: string
+  code?: string
+}
+
 interface DatabaseResponse<T> {
   data: T[] | null
-  error: any
+  error: DatabaseError | null
 }
 
 interface ClassTeacher {
@@ -22,7 +29,11 @@ interface TeacherAssignment {
 interface Class {
   id: string
   name: string
-  [key: string]: any
+  capacity?: number
+  is_active?: boolean
+  created_at?: string
+  updated_at?: string
+  [key: string]: string | number | boolean | null | undefined
 }
 
 interface Event {
@@ -34,23 +45,36 @@ interface Event {
   created_by: string
   created_by_role: string
   start_at: string
+  end_at?: string
   is_deleted: boolean
   visibility_scope: string
-  [key: string]: any
+  title?: string
+  description?: string
+  location?: string
+  [key: string]: string | number | boolean | null | undefined
 }
 
 interface Notification {
   id: string
   user_id: string
   created_at: string
-  [key: string]: any
+  title?: string
+  message?: string
+  type?: string
+  status?: string
+  read_at?: string | null
+  [key: string]: string | number | boolean | null | undefined
 }
 
 interface Profile {
   id: string
   role: string
   class_id: string | null
-  [key: string]: any
+  email?: string
+  full_name?: string
+  created_at?: string
+  updated_at?: string
+  [key: string]: string | number | boolean | null | undefined
 }
 
 export default async function TeacherDashboard() {

@@ -23,16 +23,20 @@ export interface Profile {
 export interface Event {
   id: string
   title: string
-  description?: string
+  description?: string | null
   event_type: EventType
   visibility_scope: VisibilityScope
   start_at: string
   end_at?: string
-  location?: string
+  location?: string | null
   created_by: string
-  target_class?: string
+  created_by_role: 'admin' | 'teacher' | 'student'
+  target_class?: string | null
+  target_user?: string | null
+  teacher_id?: string | null
   subject?: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown> | null
+  is_deleted: boolean
   created_at: string
   updated_at: string
 }

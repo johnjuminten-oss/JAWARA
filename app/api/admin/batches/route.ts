@@ -33,7 +33,7 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json()
     const validatedData = batchUpdateSchema.parse(body)
 
-    const updateData: Record<string, any> = {
+    const updateData: Record<string, string | boolean | null> = {
       is_active: validatedData.isActive,
     }
 

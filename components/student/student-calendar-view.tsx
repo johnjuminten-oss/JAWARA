@@ -194,7 +194,7 @@ export function StudentCalendarView({ userId, userRole, classId }: StudentCalend
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-600 mb-4">
-            You haven't been assigned to a class yet. Please contact your administrator to get assigned to a batch and class.
+            You haven&apos;t been assigned to a class yet. Please contact your administrator to get assigned to a batch and class.
           </p>
           <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
             <h4 className="font-medium text-yellow-800 mb-2">What this means:</h4>

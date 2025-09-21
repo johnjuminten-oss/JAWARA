@@ -17,10 +17,17 @@ import { PersonalEventsView } from "@/components/student/personal-events-view"
 import { Profile, Assignment, Subject, DashboardStats, Notification } from "@/types"
 import type { Event } from "@/types/events"
 
+interface EventWithDefaults extends Event {
+  created_by_role: 'admin' | 'teacher' | 'student'
+  target_user: string | null
+  teacher_id: string | null
+  is_deleted: boolean
+}
+
 interface DashboardContentProps {
   profile: Profile
   notifications: Notification[]
-  events: Event[]
+  events: EventWithDefaults[]
   assignments: Assignment[]
   subjects: Subject[]
   stats: DashboardStats
@@ -45,10 +52,10 @@ export function StudentDashboardContent({ profile, notifications, events, stats 
     location: e.location ?? null,
     target_class: e.target_class ?? null,
     metadata: e.metadata ?? null,
-    created_by_role: (e as any).created_by_role || 'student',
-    target_user: (e as any).target_user || null,
-    teacher_id: (e as any).teacher_id || null,
-    is_deleted: (e as any).is_deleted || false,
+    created_by_role: (e as EventWithDefaults).created_by_role || 'student',
+    target_user: (e as EventWithDefaults).target_user || null,
+    teacher_id: (e as EventWithDefaults).teacher_id || null,
+    is_deleted: (e as EventWithDefaults).is_deleted || false,
   }))
 
   const mappedSharedEvents: Event[] = (sharedEvents || []).map(e => ({
@@ -58,10 +65,10 @@ export function StudentDashboardContent({ profile, notifications, events, stats 
     location: e.location ?? null,
     target_class: e.target_class ?? null,
     metadata: e.metadata ?? null,
-    created_by_role: (e as any).created_by_role || 'student',
-    target_user: (e as any).target_user || null,
-    teacher_id: (e as any).teacher_id || null,
-    is_deleted: (e as any).is_deleted || false,
+    created_by_role: (e as EventWithDefaults).created_by_role || 'student',
+    target_user: (e as EventWithDefaults).target_user || null,
+    teacher_id: (e as EventWithDefaults).teacher_id || null,
+    is_deleted: (e as EventWithDefaults).is_deleted || false,
   }))
 
   const personalEvents = mappedSharedEvents.filter(e => e.created_by === profile.id && e.event_type === 'personal')
@@ -122,7 +129,7 @@ export function StudentDashboardContent({ profile, notifications, events, stats 
                       ) : (
                         <div className="p-4 text-center">
                           <p className="text-sm text-gray-600">
-                            You haven't been assigned to a class yet. Please contact your administrator.
+                            You haven&apos;t been assigned to a class yet. Please contact your administrator.
                           </p>
                         </div>
                       )}
