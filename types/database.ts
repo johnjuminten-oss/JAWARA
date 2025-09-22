@@ -23,6 +23,7 @@ export interface Class {
   is_active: boolean
   metadata?: Record<string, any>
   created_at: string
+  updated_at: string
 }
 
 export interface Batch {

@@ -4,6 +4,8 @@ import { redirect } from "next/navigation"
 import { requireRole } from "@/lib/auth"
 import { createClient } from "@/lib/supabase/server"
 import { TeacherDashboardContent } from "@/components/teacher/dashboard-content"
+import { Event, Profile, Notification } from "@/types/index"
+import { Class } from "@/types/database"
 
 // Type definitions
 interface DatabaseError {
@@ -26,56 +28,7 @@ interface TeacherAssignment {
   class_id: string
 }
 
-interface Class {
-  id: string
-  name: string
-  capacity?: number
-  is_active?: boolean
-  created_at?: string
-  updated_at?: string
-  [key: string]: string | number | boolean | null | undefined
-}
 
-interface Event {
-  id: string
-  event_type: string
-  teacher_id: string | null
-  target_class: string | null
-  target_user: string | null
-  created_by: string
-  created_by_role: string
-  start_at: string
-  end_at?: string
-  is_deleted: boolean
-  visibility_scope: string
-  title?: string
-  description?: string
-  location?: string
-  [key: string]: string | number | boolean | null | undefined
-}
-
-interface Notification {
-  id: string
-  user_id: string
-  created_at: string
-  title?: string
-  message?: string
-  type?: string
-  status?: string
-  read_at?: string | null
-  [key: string]: string | number | boolean | null | undefined
-}
-
-interface Profile {
-  id: string
-  role: string
-  class_id: string | null
-  email?: string
-  full_name?: string
-  created_at?: string
-  updated_at?: string
-  [key: string]: string | number | boolean | null | undefined
-}
 
 export default async function TeacherDashboard() {
   try {
