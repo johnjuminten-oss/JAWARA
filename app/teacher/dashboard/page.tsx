@@ -188,14 +188,16 @@ export default async function TeacherDashboard() {
       uniqueById.set(String(ev.id), ev)
     }
     const events = Array.from(uniqueById.values()).sort((a: Event, b: Event) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime())
+
     // Compute weekly events for the greeting (today -> end of week)
     // Primary source: teacher_calendar_events view (fast). Fallback: count events by class assignments and direct targets.
-  let weekEventsCount = 0
-  // Debug counters to help trace which branch returned rows
-  let viewCount = 0
-  let eventsByClassCount = 0
-  let eventsByUserCount = 0
-  let finalFromPropsCount = 0
+    let weekEventsCount = 0
+    // Debug counters to help trace which branch returned rows
+    let viewCount = 0
+    let eventsByClassCount = 0
+    let eventsByUserCount = 0
+    let finalFromPropsCount = 0
+
     // compute week bounds
     const startOfWeek = new Date()
     startOfWeek.setHours(0, 0, 0, 0)
